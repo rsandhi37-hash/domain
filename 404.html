@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS Websites</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; }
+        iframe { border: none; width: 100%; height: 100%; }
+        .message { text-align: center; margin-top: 20%; font-family: sans-serif; padding: 20px; }
+    </style>
+</head>
+<body>
+    <iframe id="display" src="" style="display:none;"></iframe>
+    <div id="status" class="message">Loading RS System...</div>
+
+    <script>
+        async function startSystem() {
+            const statusDiv = document.getElementById('status');
+            const iframe = document.getElementById('display');
+
+            try {
+                // 1. Database file ko fetch karna
+                const response = await fetch('database.json');
+                const mySites = await response.json();
+
+                // 2. URL se path nikalna (e.g. /rs.store -> rs_store)
+                let path = window.location.pathname.split("/").pop().replace(".", "_");
+
+                if (!path || path === "") {
+                    statusDiv.innerHTML = "<h1>Welcome to Our Site</h1>";
+                } else if (mySites[path]) {
+                    // 3. Agar link mil gaya toh iframe mein load karo
+                    statusDiv.style.display = 'none';
+                    iframe.style.display = 'block';
+                    iframe.src = mySites[path];
+                } else {
+                    statusDiv.innerHTML = "<h1>Error 404 : Link not found! Please Check Your Link. Thanks for Visiting our Site 😊</h1>";
+                }
+            } catch (error) {
+                statusDiv.innerHTML = "<h1>System Error: Database file not found!</h1>";
+                console.error(error);
+            }
+        }
+
+        startSystem();
+    </script>
+</body>
+</html>
