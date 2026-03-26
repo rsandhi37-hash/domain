@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <iframe id="display" src="" style="display:none;"></iframe>
+    <iframe id="display" src="" style="display:none; width:100%; height:100%; border:none;"></iframe>
     <div id="status" class="message">Loading RS System...</div>
 
     <script>
@@ -20,26 +20,32 @@
             const iframe = document.getElementById('display');
 
             try {
-                // 1. Database file ko fetch karna
+                // Database file fetch karna
                 const response = await fetch('database.json');
                 const mySites = await response.json();
 
-                // 2. URL se path nikalna (e.g. /rs.store -> rs_store)
+                // URL se path nikalna
                 let path = window.location.pathname.split("/").pop().replace(".", "_");
 
-                if (!path || path === "") {
-                    statusDiv.innerHTML = "<h1>Welcome to Our Site</h1>";
-                } else if (mySites[path]) {
-                    // 3. Agar link mil gaya toh iframe mein load karo
+                // AGAR URL KHALI HAI (Blank Path)
+                if (!path || path === "" || path === "domain") { 
+                    statusDiv.style.display = 'none';
+                    iframe.style.display = 'block';
+                    iframe.src = "https://rehansandhi.netlify.app"; // Default site
+                } 
+                // AGAR DATABASE MEIN LINK HAI
+                else if (mySites[path]) {
                     statusDiv.style.display = 'none';
                     iframe.style.display = 'block';
                     iframe.src = mySites[path];
-                } else {
+                } 
+                // AGAR LINK NAHI MILA
+                else {
                     statusDiv.innerHTML = "<h1>Error 404 : Link not found! Please Check Your Link. Thanks for Visiting our Site 😊</h1>";
                 }
             } catch (error) {
-                statusDiv.innerHTML = "<h1>System Error: Database file not found!</h1>";
-                console.error(error);
+                // Error handle karna (Agar file na mile)
+                statusDiv.innerHTML = "<h1>System Error: Database not found!</h1>";
             }
         }
 
